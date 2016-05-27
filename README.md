@@ -1,5 +1,7 @@
-CLI configuration provider
-==========================
+# CLI configuration provider
+[![Build Status](https://travis-ci.org/gorigin/config.svg)](https://travis-ci.org/gorigin/config)
+[![Go Report Card](https://goreportcard.com/badge/github.com/gorigin/config)](https://goreportcard.com/report/github.com/gorigin/config)
+[![GoDoc](https://godoc.org/github.com/gorigin/config?status.svg)](https://godoc.org/github.com/gorigin/config)
 
 This package provides some utilities to read file-based configuration files.
 At this moment, only `.ini` and `.json` files are supported

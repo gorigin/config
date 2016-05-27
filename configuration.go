@@ -2,7 +2,7 @@ package config
 
 // Configuration holds configuration information
 type Configuration interface {
-	// Tests configuration for consistency and any errors
+	// Test method tests configuration for consistency and any errors
 	Test() error
 
 	// Has returns true if configuration has provided qualifier

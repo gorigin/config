@@ -10,8 +10,7 @@ import (
 	"strings"
 )
 
-// IniFileValuesReader reads byte contents into values map
-func IniFileValuesFiller(bts []byte) (map[string]interface{}, error) {
+func iniFileValuesFiller(bts []byte) (map[string]interface{}, error) {
 	props := map[string]interface{}{}
 	lineNumber := 0
 	scanner := bufio.NewScanner(bytes.NewReader(bts))
@@ -44,7 +43,7 @@ func New(options file.Options) config.Configuration {
 	return file.NewFileConfiguration(
 		file.FullOptions{
 			Options:          options.WithDefaults(),
-			ByteToMapReader:  IniFileValuesFiller,
+			ByteToMapReader:  iniFileValuesFiller,
 			ReflectionMapper: reflect.AnyMarshaller,
 		},
 	)

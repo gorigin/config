@@ -2,14 +2,19 @@ package config
 
 import "fmt"
 
+// NewConfigurationsContainer returns new configurations container, build
+// on provided configurations
 func NewConfigurationsContainer(configs ...Configuration) Configuration {
 	return ConfigurationsContainer(configs)
 }
 
+// ConfigurationsContainer represents slice of configurations and implements
+// Configuration interface
 type ConfigurationsContainer []Configuration
 
-func (this ConfigurationsContainer) Test() error {
-	for _, conf := range this {
+// Test tests configuration for consistency and any errors
+func (cc ConfigurationsContainer) Test() error {
+	for _, conf := range cc {
 		if err := conf.Test(); err != nil {
 			return err
 		}
@@ -18,8 +23,9 @@ func (this ConfigurationsContainer) Test() error {
 	return nil
 }
 
-func (this ConfigurationsContainer) Has(qualifier string) bool {
-	for _, c := range this {
+// Has returns true if configuration has provided qualifier
+func (cc ConfigurationsContainer) Has(qualifier string) bool {
+	for _, c := range cc {
 		if c.Has(qualifier) {
 			return true
 		}
@@ -28,9 +34,11 @@ func (this ConfigurationsContainer) Has(qualifier string) bool {
 	return false
 }
 
-func (this ConfigurationsContainer) Value(qualifier string) (interface{}, bool) {
-	for i := len(this) - 1; i >= 0; i-- {
-		c := this[i]
+// Value returns configuration value and boolean flag
+// which set to false when no data found
+func (cc ConfigurationsContainer) Value(qualifier string) (interface{}, bool) {
+	for i := len(cc) - 1; i >= 0; i-- {
+		c := cc[i]
 		if c.Has(qualifier) {
 			return c.Value(qualifier)
 		}
@@ -39,9 +47,11 @@ func (this ConfigurationsContainer) Value(qualifier string) (interface{}, bool) 
 	return nil, false
 }
 
-func (this ConfigurationsContainer) Configure(qualifier string, target interface{}) error {
-	for i := len(this) - 1; i >= 0; i-- {
-		c := this[i]
+// Configure performs configuration of target using internal
+// data, found by qualifier
+func (cc ConfigurationsContainer) Configure(qualifier string, target interface{}) error {
+	for i := len(cc) - 1; i >= 0; i-- {
+		c := cc[i]
 		if c.Has(qualifier) {
 			return c.Configure(qualifier, target)
 		}
@@ -50,9 +60,10 @@ func (this ConfigurationsContainer) Configure(qualifier string, target interface
 	return fmt.Errorf("No config with qualifier %s found", qualifier)
 }
 
-func (this ConfigurationsContainer) Qualifiers() ([]string, error) {
+// Qualifiers returns list of qualifiers
+func (cc ConfigurationsContainer) Qualifiers() ([]string, error) {
 	unique := map[string]bool{}
-	for _, c := range this {
+	for _, c := range cc {
 		qf, err := c.Qualifiers()
 		if err != nil {
 			return nil, err

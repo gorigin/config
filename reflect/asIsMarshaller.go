@@ -21,7 +21,7 @@ func AsIsMarshaller(source interface{}, target interface{}) error {
 		// Same type
 		reflect.ValueOf(target).Elem().Set(reflect.ValueOf(source))
 		return nil
-	} else {
-		return fmt.Errorf("%s != %s", sk, tk)
 	}
+
+	return fmt.Errorf("%s != %s", sk, tk)
 }

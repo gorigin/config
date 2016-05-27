@@ -48,25 +48,25 @@ func New(options Options) config.Configuration {
 	return c
 }
 
-func (this *mfc) Test() error {
-	if this.data == nil {
-		return this.Reload()
+func (m *mfc) Test() error {
+	if m.data == nil {
+		return m.Reload()
 	}
 
-	return this.data.Test()
+	return m.data.Test()
 }
 
-func (this *mfc) Reload() error {
+func (m *mfc) Reload() error {
 
-	prompter := gpg.NewCachedPrompter(this.Prompter)
+	prompter := gpg.NewCachedPrompter(m.Prompter)
 
 	// First pass - reading all data to be used as placeholders
 	placeholders := []config.Configuration{}
-	for _, name := range this.Filenames {
+	for _, name := range m.Filenames {
 		opts := file.Options{
 			Filename: name,
-			Reader:   this.Reader,
-			Locator:  this.Locator,
+			Reader:   m.Reader,
+			Locator:  m.Locator,
 		}
 
 		ext, real := getExtAndRealExt(name)
@@ -99,11 +99,11 @@ func (this *mfc) Reload() error {
 
 	// Second pass - reading and replacing placeholders
 	configs := []config.Configuration{}
-	for _, name := range this.Filenames {
+	for _, name := range m.Filenames {
 		opts := file.Options{
 			Filename: name,
-			Reader:   this.Reader,
-			Locator:  this.Locator,
+			Reader:   m.Reader,
+			Locator:  m.Locator,
 		}
 
 		ext, real := getExtAndRealExt(name)
@@ -132,52 +132,52 @@ func (this *mfc) Reload() error {
 		}
 	}
 
-	this.data = config.NewConfigurationsContainer(configs...)
-	return this.Test()
+	m.data = config.NewConfigurationsContainer(configs...)
+	return m.Test()
 }
 
-func (this *mfc) Has(qualifier string) bool {
-	if this.data == nil {
-		err := this.Reload()
+func (m *mfc) Has(qualifier string) bool {
+	if m.data == nil {
+		err := m.Reload()
 		if err != nil {
 			return false
 		}
 	}
 
-	return this.data.Has(qualifier)
+	return m.data.Has(qualifier)
 }
 
-func (this *mfc) Value(qualifier string) (interface{}, bool) {
-	if this.data == nil {
-		err := this.Reload()
+func (m *mfc) Value(qualifier string) (interface{}, bool) {
+	if m.data == nil {
+		err := m.Reload()
 		if err != nil {
 			return nil, false
 		}
 	}
 
-	return this.data.Value(qualifier)
+	return m.data.Value(qualifier)
 }
 
-func (this *mfc) Configure(qualifier string, target interface{}) error {
-	if this.data == nil {
-		err := this.Reload()
+func (m *mfc) Configure(qualifier string, target interface{}) error {
+	if m.data == nil {
+		err := m.Reload()
 		if err != nil {
 			return err
 		}
 	}
 
-	return this.data.Configure(qualifier, target)
+	return m.data.Configure(qualifier, target)
 }
 
-func (this *mfc) Qualifiers() ([]string, error) {
-	if this.data == nil {
-		err := this.Reload()
+func (m *mfc) Qualifiers() ([]string, error) {
+	if m.data == nil {
+		err := m.Reload()
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return this.data.Qualifiers()
+	return m.data.Qualifiers()
 }
 
 func getExtAndRealExt(filename string) (ext string, real string) {

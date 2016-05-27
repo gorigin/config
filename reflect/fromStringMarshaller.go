@@ -20,17 +20,17 @@ func FromStringMarshaller(source string, target interface{}) error {
 	case reflect.String:
 		val.SetString(source)
 	case reflect.Int, reflect.Int64:
-		if iv, err := strconv.Atoi(source); err != nil {
+		iv, err := strconv.Atoi(source)
+		if err != nil {
 			return err
-		} else {
-			val.SetInt(int64(iv))
 		}
+		val.SetInt(int64(iv))
 	case reflect.Float64:
-		if fv, err := strconv.ParseFloat(source, 64); err != nil {
+		fv, err := strconv.ParseFloat(source, 64)
+		if err != nil {
 			return err
-		} else {
-			val.SetFloat(fv)
 		}
+		val.SetFloat(fv)
 	case reflect.Bool:
 		source = strings.ToUpper(source)
 		val.SetBool(source == "TRUE" || source == "T" || source == "1" || source == "YES" || source == "Y" || source == "ON")

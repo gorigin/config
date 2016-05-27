@@ -11,7 +11,6 @@ At this moment, only `.ini` and `.json` files are supported
 ## Usage
 
 ```
-
 import (
 	"github.com/gorigin/config/file/multi"
 	"github.com/gorigin/config/file"
@@ -26,6 +25,38 @@ func main() {
     // Now configure anything
     err = cf.Configure("database", &database);
 }
+```
+
+## Locators
+
+Locators used to locate file by it's name
+
+```
+// FileLocator is function, able to found file in different locations
+type FileLocator func(string) (string, error)
+```
+
+Implementations:
+
+* `file.LocalFolderLocator` - locator, that searched for file only in current folder and checks availability
+* `file.NewCommonLocationsLocator` - returns a locator, that able to lookup in current folder, home folder and `/etc/` with subfolder support
+* `file.NoopLocator` - does not locate anything, just returns provided filename. Used in tests
+
+## Readers
+
+Readers used to provide file contents (in bytes) by filename
+
+```
+// FileReader can read resolved file contents
+type FileReader func(string) ([]byte, error)
+```
+
+Implementations:
+
+* `ioutil.ReadFile` - is valid reader
+* `file.NewPlaceholdersReplacerReader` - returns reader, that replaces placeholders
+* `gpg.NewGpgReader` - returns reader, able to decrypt ASCII-armored GPG files
+* `file.stringReader` - returns reader, bound to string. Mostly used in tests
 
 
 ## GPG

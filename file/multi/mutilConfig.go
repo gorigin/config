@@ -12,41 +12,40 @@ import (
 	"path/filepath"
 )
 
-type mfc struct {
-	fileNames []string
+type Options struct {
+	// Configuration file names
+	Filenames []string
 
-	locator          file.FileLocator
-	reader           file.FileReader
-	passwordPrompter func(string) ([]byte, error)
+	// Locator, used to find file
+	Locator file.FileLocator
+
+	// Reader, used to read file contents
+	Reader file.FileReader
+
+	// Prompter, invoked when password to decrypt file requested
+	Prompter func(string) ([]byte, error)
+}
+
+type mfc struct {
+	Options
 
 	data config.Configuration
 }
 
-func NewMultifileConfig(files []string, locator file.FileLocator) (config.Configuration, error) {
-	c := &mfc{
-		locator:          locator,
-		reader:           ioutil.ReadFile,
-		passwordPrompter: gpg.TerminalPasswordPrompter,
+// New creates and return configuration source, based on multiple
+// files. Supported files are: .ini .json .yml
+// Any of this files MAY be encrypted using armored GPG and have
+// extension .asc (config.yaml.asc) for example
+func New(options Options) config.Configuration {
+	c := &mfc{Options: options}
+	if c.Prompter == nil {
+		c.Prompter = gpg.TerminalPasswordPrompter
+	}
+	if c.Reader == nil {
+		c.Reader = ioutil.ReadFile
 	}
 
-	for _, name := range files {
-		ext, real := getExtAndRealExt(name)
-		fmt.Println("Step1", name, ext, real)
-		if ext != real {
-			if ext != ".asc" {
-				return nil, fmt.Errorf("Only GPG .asc files supported, %s provided", ext)
-			}
-		}
-
-		switch real {
-		case ".ini", ".cnf", ".json", ".yaml":
-			c.fileNames = append(c.fileNames, name)
-		default:
-			return nil, fmt.Errorf("Unsupported file %s", name)
-		}
-	}
-
-	return c, nil
+	return c
 }
 
 func (this *mfc) Test() error {
@@ -59,33 +58,40 @@ func (this *mfc) Test() error {
 
 func (this *mfc) Reload() error {
 
-	prompter := gpg.NewCachedPrompter(this.passwordPrompter)
+	prompter := gpg.NewCachedPrompter(this.Prompter)
 
 	// First pass - reading all data to be used as placeholders
 	placeholders := []config.Configuration{}
-	for _, name := range this.fileNames {
+	for _, name := range this.Filenames {
+		opts := file.Options{
+			Filename: name,
+			Reader:   this.Reader,
+			Locator:  this.Locator,
+		}
+
 		ext, real := getExtAndRealExt(name)
-		reader := this.reader
 		if ext == ".asc" {
-			reader = gpg.NewGpgReader(this.reader, prompter)
+			opts.Reader = gpg.NewGpgReader(opts.Reader, prompter)
 		}
 
 		switch real {
 		case ".ini", ".cnf":
 			placeholders = append(
 				placeholders,
-				ini.NewIniConfigFile(name, this.locator, reader),
+				ini.New(opts),
 			)
 		case ".json":
 			placeholders = append(
 				placeholders,
-				json.NewJsonConfigFile(name, this.locator, reader),
+				json.New(opts),
 			)
-		case ".yaml":
+		case ".yaml", ".yml":
 			placeholders = append(
 				placeholders,
-				yaml.NewYamlConfigFile(name, this.locator, reader),
+				yaml.New(opts),
 			)
+		default:
+			return fmt.Errorf("Unsupported extension %s in file %s", ext, name)
 		}
 	}
 
@@ -93,30 +99,35 @@ func (this *mfc) Reload() error {
 
 	// Second pass - reading and replacing placeholders
 	configs := []config.Configuration{}
-	for _, name := range this.fileNames {
-		ext, real := getExtAndRealExt(name)
-		reader := this.reader
-		if ext == ".asc" {
-			reader = gpg.NewGpgReader(this.reader, prompter)
+	for _, name := range this.Filenames {
+		opts := file.Options{
+			Filename: name,
+			Reader:   this.Reader,
+			Locator:  this.Locator,
 		}
 
-		reader = file.NewPlaceholdersReplacerReader(reader, phc)
+		ext, real := getExtAndRealExt(name)
+		if ext == ".asc" {
+			opts.Reader = gpg.NewGpgReader(opts.Reader, prompter)
+		}
+
+		opts.Reader = file.NewPlaceholdersReplacerReader(opts.Reader, phc)
 
 		switch real {
 		case ".ini", ".cnf":
 			configs = append(
 				configs,
-				ini.NewIniConfigFile(name, this.locator, reader),
+				ini.New(opts),
 			)
 		case ".json":
 			configs = append(
 				configs,
-				json.NewJsonConfigFile(name, this.locator, reader),
+				json.New(opts),
 			)
-		case ".yaml":
+		case ".yaml", ".yml":
 			configs = append(
 				configs,
-				yaml.NewYamlConfigFile(name, this.locator, reader),
+				yaml.New(opts),
 			)
 		}
 	}

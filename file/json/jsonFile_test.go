@@ -17,7 +17,7 @@ func TestNewJsonConfigFile(t *testing.T) {
     {"role": "admin", "enabled": true, "id": 10}
   ]
 }`)
-	json := NewJsonConfigFile("anything", file.NoopLocator, reader)
+	json := New(file.Options{Reader: reader, Locator: file.NoopLocator})
 	q, err := json.Qualifiers()
 
 	assert.NoError(err)

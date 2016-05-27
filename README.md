@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/gorigin/config?status.svg)](https://godoc.org/github.com/gorigin/config)
 
 This package provides some utilities to read file-based configuration files.
-At this moment, only `.ini`, `.json` and `.yaml` files are supported
+At this moment, only `.ini`, `.json` and `.yml` files are supported
 
 ## Installation
 
@@ -19,7 +19,7 @@ import (
 )
 
 func main() {
-    cf, err := multi.NewMultifileConfig([]string{/* Files list */}, file.LocalFolderLocator)
+    cf, err := multi.NewMultifileConfig(multi.Options{Filenames: []string{"main.json", "options.ini"}})
     if err != nil {
         panic(err)
     }

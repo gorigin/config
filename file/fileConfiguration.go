@@ -6,25 +6,15 @@ import (
 )
 
 type fileConfiguration struct {
-	filename string
-
-	locate FileLocator
-	read   FileReader
-	fill   func([]byte) (map[string]interface{}, error)
-	mapper func(source interface{}, target interface{}) error
+	FullOptions
 
 	values map[string]interface{}
 	err    error
 }
 
-func NewFileConfiguration(filename string, l FileLocator, r FileReader, f func([]byte) (map[string]interface{}, error), m func(interface{}, interface{}) error) config.Configuration {
-	return &fileConfiguration{
-		filename: filename,
-		locate:   l,
-		read:     r,
-		fill:     f,
-		mapper:   m,
-	}
+// NewFileConfiguration creates and returns new file-based configuration
+func NewFileConfiguration(opts FullOptions) config.Configuration {
+	return &fileConfiguration{FullOptions: opts}
 }
 
 func (this *fileConfiguration) Test() error {
@@ -43,21 +33,21 @@ func (this *fileConfiguration) Test() error {
 
 func (this *fileConfiguration) Reload() error {
 	// Locating file
-	filename, err := this.locate(this.filename)
+	filename, err := this.Locator(this.Filename)
 	if err != nil {
 		this.err = err
 		return err
 	}
 
 	// Reading file
-	bts, err := this.read(filename)
+	bts, err := this.Reader(filename)
 	if err != nil {
 		this.err = err
 		return err
 	}
 
 	// Filling values
-	this.values, err = this.fill(bts)
+	this.values, err = this.ByteToMapReader(bts)
 	if err != nil {
 		this.err = err
 		return err
@@ -105,7 +95,7 @@ func (this *fileConfiguration) Configure(qualifier string, target interface{}) e
 	if !ok {
 		return fmt.Errorf("Qualifier %s not found in configuration", qualifier)
 	}
-	return this.mapper(val, target)
+	return this.ReflectionMapper(val, target)
 }
 
 func (this *fileConfiguration) Qualifiers() ([]string, error) {

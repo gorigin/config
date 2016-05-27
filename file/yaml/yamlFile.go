@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"github.com/gorigin/config"
 	"github.com/gorigin/config/file"
-	yaml "gopkg.in/yaml.v2"
-	"io/ioutil"
+	"gopkg.in/yaml.v2"
 )
 
-func YamlFileValuesFiller(bts []byte) (map[string]interface{}, error) {
+func yamlFileValuesFiller(bts []byte) (map[string]interface{}, error) {
 	var target yaml.MapSlice
 	err := yaml.Unmarshal(bts, &target)
 	if err != nil {
@@ -31,7 +30,7 @@ func YamlFileValuesFiller(bts []byte) (map[string]interface{}, error) {
 	return response, nil
 }
 
-func YamlFileValuesMapper(source interface{}, target interface{}) error {
+func yamlFileValuesMapper(source interface{}, target interface{}) error {
 	raw, ok := source.([]byte)
 	if !ok {
 		return fmt.Errorf("Value must be byte slice")
@@ -40,22 +39,13 @@ func YamlFileValuesMapper(source interface{}, target interface{}) error {
 	return yaml.Unmarshal(raw, target)
 }
 
-func NewYamlConfigFile(filename string, l file.FileLocator, r file.FileReader) config.Configuration {
-	return file.NewFileConfiguration(filename, l, r, YamlFileValuesFiller, YamlFileValuesMapper)
-}
-
-func NewLocalCommonYamlConfigFile(filename string) config.Configuration {
-	return NewYamlConfigFile(filename, file.LocalFolderLocator, ioutil.ReadFile)
-}
-
-func NewLocalYamlConfigWithPlaceholders(filename string, props config.Configuration) config.Configuration {
-	return NewYamlConfigFile(filename, file.LocalFolderLocator, file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
-}
-
-func NewCommonYamlConfigFile(filename string, subfolder string) config.Configuration {
-	return NewYamlConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
-}
-
-func NewYamlConfigFileWithPlaceholders(filename string, subfolder string, props config.Configuration) config.Configuration {
-	return NewYamlConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
+// New returns new .yaml (and .yml) file configuration source
+func New(options file.Options) config.Configuration {
+	return file.NewFileConfiguration(
+		file.FullOptions{
+			Options:          options.WithDefaults(),
+			ByteToMapReader:  yamlFileValuesFiller,
+			ReflectionMapper: yamlFileValuesMapper,
+		},
+	)
 }

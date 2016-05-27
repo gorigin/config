@@ -35,40 +35,38 @@ CRz5s258W0k3bRGgoy5b0b9l3m4n587Gf2o4IzBAqpIvnPjLzfbe
 -----END PGP MESSAGE-----`,
 	}
 
-	reader := func(name string) ([]byte, error) {
-		t.Log("Reading", name)
-		v, ok := files[name]
-		if !ok {
-			return nil, fmt.Errorf("File %s not found", name)
-		}
+	c := New(Options{
+		Filenames: []string{"first.ini", "main.json", "app.yaml", "second.ini.asc"},
+		Locator:   file.NoopLocator,
+		Reader: func(name string) ([]byte, error) {
+			t.Log("Reading", name)
+			v, ok := files[name]
+			if !ok {
+				return nil, fmt.Errorf("File %s not found", name)
+			}
 
-		return []byte(v), nil
-	}
+			return []byte(v), nil
+		},
+		Prompter: func(filename string) ([]byte, error) {
+			if filename == "second.ini.asc" {
+				return []byte("123"), nil
+			}
 
-	c, err := NewMultifileConfig([]string{"first.ini", "main.json", "app.yaml", "second.ini.asc"}, file.NoopLocator)
-	assert.NoError(err)
+			return nil, fmt.Errorf("Invalid file %s", filename)
+		},
+	})
+
 	assert.NotNil(c)
 
-	// Replacing reader
-	rc, ok := c.(*mfc)
-	assert.True(ok)
-	rc.reader = reader
-	rc.passwordPrompter = func(filename string) ([]byte, error) {
-		if filename == "second.ini.asc" {
-			return []byte("123"), nil
-		}
-
-		return nil, fmt.Errorf("Invalid file %s", filename)
-	}
-
 	// Reading
-	assert.NoError(rc.Reload())
-	q, err := rc.Qualifiers()
+	assert.NoError(c.Test())
+	q, err := c.Qualifiers()
+	assert.NoError(err)
 
 	// Asserting
 	assert.Len(q, 8)
 	valueEq := func(key string, value interface{}) {
-		v, ok := rc.Value(key)
+		v, ok := c.Value(key)
 		if ok {
 			if r, k := v.(json.RawMessage); k {
 				v = string(r)

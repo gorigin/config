@@ -24,7 +24,7 @@ enabled=1
 	`)
 
 	// Building configuration reader
-	ini := NewIniConfigFile("anything", file.NoopLocator, reader)
+	ini := New(file.Options{Reader: reader, Locator: file.NoopLocator})
 
 	q, err := ini.Qualifiers()
 

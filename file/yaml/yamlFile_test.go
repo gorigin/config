@@ -21,7 +21,7 @@ credentials:
     id: 10 # More comments
     enabled: true
 `)
-	yaml := NewYamlConfigFile("anything", file.NoopLocator, reader)
+	yaml := New(file.Options{Reader: reader, Locator: file.NoopLocator})
 	q, err := yaml.Qualifiers()
 
 	assert.NoError(err)

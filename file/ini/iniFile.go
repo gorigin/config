@@ -7,7 +7,6 @@ import (
 	"github.com/gorigin/config"
 	"github.com/gorigin/config/file"
 	"github.com/gorigin/config/reflect"
-	"io/ioutil"
 	"strings"
 )
 
@@ -40,14 +39,13 @@ func IniFileValuesFiller(bts []byte) (map[string]interface{}, error) {
 	return props, nil
 }
 
-func NewIniConfigFile(filename string, l file.FileLocator, r file.FileReader) config.Configuration {
-	return file.NewFileConfiguration(filename, l, r, IniFileValuesFiller, reflect.AnyMarshaller)
-}
-
-func NewLocalCommonIniConfigFile(filename string) config.Configuration {
-	return NewIniConfigFile(filename, file.LocalFolderLocator, ioutil.ReadFile)
-}
-
-func NewCommonIniConfigFile(filename string, subfolder string) config.Configuration {
-	return NewIniConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
+// New returns new .ini (or .cnf) configuration source
+func New(options file.Options) config.Configuration {
+	return file.NewFileConfiguration(
+		file.FullOptions{
+			Options:          options.WithDefaults(),
+			ByteToMapReader:  IniFileValuesFiller,
+			ReflectionMapper: reflect.AnyMarshaller,
+		},
+	)
 }

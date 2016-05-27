@@ -4,7 +4,7 @@
 [![GoDoc](https://godoc.org/github.com/gorigin/config?status.svg)](https://godoc.org/github.com/gorigin/config)
 
 This package provides some utilities to read file-based configuration files.
-At this moment, only `.ini` and `.json` files are supported
+At this moment, only `.ini`, `.json` and `.yaml` files are supported
 
 ## Installation
 

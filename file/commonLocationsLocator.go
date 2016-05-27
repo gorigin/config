@@ -9,6 +9,9 @@ import (
 
 var separator = string(os.PathSeparator)
 
+// NewCommonLocationsLocator return a locator, that will search for file in current folder,
+// home folder and /etc/.
+// Subfolder may be configured
 func NewCommonLocationsLocator(currentFolder, homeFolder, etc bool, subfolder string) FileLocator {
 	return func(filename string) (string, error) {
 		if hasPathSeparator(filename) {

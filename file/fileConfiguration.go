@@ -120,7 +120,7 @@ func (this *fileConfiguration) Qualifiers() ([]string, error) {
 	}
 
 	names := []string{}
-	for n, _ := range this.values {
+	for n := range this.values {
 		names = append(names, n)
 	}
 

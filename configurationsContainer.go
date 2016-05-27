@@ -63,7 +63,7 @@ func (this ConfigurationsContainer) Qualifiers() ([]string, error) {
 	}
 
 	names := []string{}
-	for n, _ := range unique {
+	for n := range unique {
 		names = append(names, n)
 	}
 

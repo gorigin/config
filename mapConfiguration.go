@@ -46,7 +46,7 @@ func (this MapConfiguration) Qualifiers() ([]string, error) {
 	}
 
 	qa := []string{}
-	for k, _ := range this {
+	for k := range this {
 		qa = append(qa, k)
 	}
 

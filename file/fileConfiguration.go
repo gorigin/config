@@ -59,66 +59,66 @@ func (fc *fileConfiguration) Reload() error {
 }
 
 // Has returns true if configuration has provided qualifier
-func (this *fileConfiguration) Has(qualifier string) bool {
-	if this.Test() != nil {
+func (fc *fileConfiguration) Has(qualifier string) bool {
+	if fc.Test() != nil {
 		return false
 	}
 
-	_, ok := this.values[qualifier]
+	_, ok := fc.values[qualifier]
 	return ok
 }
 
 // Value returns configuration value and boolean flag
 // which set to false when no data found
-func (this *fileConfiguration) Value(qualifier string) (interface{}, bool) {
-	if this.Test() != nil {
+func (fc *fileConfiguration) Value(qualifier string) (interface{}, bool) {
+	if fc.Test() != nil {
 		return nil, false
 	}
-	if this.values == nil {
-		err := this.Reload()
+	if fc.values == nil {
+		err := fc.Reload()
 		if err != nil {
 			return nil, false
 		}
 	}
 
-	v, ok := this.values[qualifier]
+	v, ok := fc.values[qualifier]
 	return v, ok
 }
 
 // Configure performs configuration of target using internal
 // data, found by qualifier
-func (this *fileConfiguration) Configure(qualifier string, target interface{}) error {
-	if err := this.Test(); err != nil {
+func (fc *fileConfiguration) Configure(qualifier string, target interface{}) error {
+	if err := fc.Test(); err != nil {
 		return err
 	}
-	if this.values == nil {
-		err := this.Reload()
+	if fc.values == nil {
+		err := fc.Reload()
 		if err != nil {
 			return err
 		}
 	}
 
-	val, ok := this.values[qualifier]
+	val, ok := fc.values[qualifier]
 	if !ok {
 		return fmt.Errorf("Qualifier %s not found in configuration", qualifier)
 	}
-	return this.ReflectionMapper(val, target)
+	return fc.ReflectionMapper(val, target)
 }
 
 // Qualifiers returns list of qualifiers
-func (this *fileConfiguration) Qualifiers() ([]string, error) {
-	if err := this.Test(); err != nil {
+func (fc *fileConfiguration) Qualifiers() ([]string, error) {
+	if err := fc.Test(); err != nil {
 		return nil, err
 	}
-	if this.values == nil {
-		err := this.Reload()
+	if fc.values == nil {
+		err := fc.Reload()
 		if err != nil {
 			return nil, err
 		}
 	}
 
 	names := []string{}
-	for n := range this.values {
+	for n := range fc.values {
 		names = append(names, n)
 	}
 

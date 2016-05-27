@@ -53,6 +53,7 @@ func TerminalPasswordPrompter(filename string) (password []byte, err error) {
 	return
 }
 
+// NewCachedPrompter wraps provided prompter into new one, that caches responses
 func NewCachedPrompter(prompter func(string) ([]byte, error)) func(string) ([]byte, error) {
 	cache := map[string][]byte{}
 	return func(filename string) (password []byte, err error) {

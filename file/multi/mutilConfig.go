@@ -12,6 +12,7 @@ import (
 	"path/filepath"
 )
 
+// Options is multi-config constructor options
 type Options struct {
 	// Configuration file names
 	Filenames []string

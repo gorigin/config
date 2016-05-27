@@ -9,5 +9,5 @@ import (
 // NewMyCnfReader return properties provided, setted using local .my.cnf
 // file or ~/.my.cnf
 func NewMyCnfReader() config.Configuration {
-	return NewIniConfigFile(".my.cnf", file.GetCommonLocationsLocator(true, true, false, ""), ioutil.ReadFile)
+	return NewIniConfigFile(".my.cnf", file.NewCommonLocationsLocator(true, true, false, ""), ioutil.ReadFile)
 }

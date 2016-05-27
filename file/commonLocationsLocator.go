@@ -9,7 +9,7 @@ import (
 
 var separator = string(os.PathSeparator)
 
-func GetCommonLocationsLocator(currentFolder, homeFolder, etc bool, subfolder string) FileLocator {
+func NewCommonLocationsLocator(currentFolder, homeFolder, etc bool, subfolder string) FileLocator {
 	return func(filename string) (string, error) {
 		if hasPathSeparator(filename) {
 			// Absolute path

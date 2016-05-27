@@ -83,5 +83,5 @@ func NewLocalCommonIniConfigFile(filename string) config.Configuration {
 }
 
 func NewCommonIniConfigFile(filename string, subfolder string) config.Configuration {
-	return NewIniConfigFile(filename, file.GetCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
+	return NewIniConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
 }

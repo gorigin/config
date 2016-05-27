@@ -47,9 +47,9 @@ func NewLocalJsonConfigWithPlaceholders(filename string, props config.Configurat
 }
 
 func NewCommonJsonConfigFile(filename string, subfolder string) config.Configuration {
-	return NewJsonConfigFile(filename, file.GetCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
+	return NewJsonConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
 }
 
 func NewJsonConfigFileWithPlaceholders(filename string, subfolder string, props config.Configuration) config.Configuration {
-	return NewJsonConfigFile(filename, file.GetCommonLocationsLocator(true, true, true, subfolder), file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
+	return NewJsonConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
 }

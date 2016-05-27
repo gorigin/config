@@ -53,9 +53,9 @@ func NewLocalYamlConfigWithPlaceholders(filename string, props config.Configurat
 }
 
 func NewCommonYamlConfigFile(filename string, subfolder string) config.Configuration {
-	return NewYamlConfigFile(filename, file.GetCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
+	return NewYamlConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), ioutil.ReadFile)
 }
 
 func NewYamlConfigFileWithPlaceholders(filename string, subfolder string, props config.Configuration) config.Configuration {
-	return NewYamlConfigFile(filename, file.GetCommonLocationsLocator(true, true, true, subfolder), file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
+	return NewYamlConfigFile(filename, file.NewCommonLocationsLocator(true, true, true, subfolder), file.NewPlaceholdersReplacerReader(ioutil.ReadFile, props))
 }

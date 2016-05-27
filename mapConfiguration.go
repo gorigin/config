@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"github.com/gorigin/config/reflect"
+)
 
 // MapConfiguration is in-memory configuration for placeholders
 type MapConfiguration map[string]interface{}
@@ -36,7 +39,12 @@ func (this MapConfiguration) Value(qualifier string) (interface{}, bool) {
 // Configure performs configuration of target using internal
 // data, found by qualifier
 func (this MapConfiguration) Configure(qualifier string, target interface{}) error {
-	return fmt.Errorf("MapConfiguration is not supposed to be used as configurer")
+	v, ok := this.Value(qualifier)
+	if !ok {
+		return fmt.Errorf("Qualifier %s not found", qualifier)
+	}
+
+	return reflect.AnyMarshaller(v, target)
 }
 
 // Qualifiers returns list of qualifiers

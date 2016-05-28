@@ -25,6 +25,12 @@ type Options struct {
 
 	// Prompter, invoked when password to decrypt file requested
 	Prompter func(string) ([]byte, error)
+
+	// Slice of configurations to prepend to resulting one
+	Prepend []config.Configuration
+
+	// Slice of configurations to append to resulting one
+	Append []config.Configuration
 }
 
 type mfc struct {
@@ -96,6 +102,14 @@ func (m *mfc) Reload() error {
 		}
 	}
 
+	// Adding preconfigured values
+	if len(m.Prepend) > 0 {
+		placeholders = append(m.Prepend, placeholders...)
+	}
+	if len(m.Append) > 0 {
+		placeholders = append(placeholders, m.Append...)
+	}
+
 	phc := config.NewConfigurationsContainer(placeholders...)
 
 	// Second pass - reading and replacing placeholders
@@ -131,6 +145,14 @@ func (m *mfc) Reload() error {
 				yaml.New(opts),
 			)
 		}
+	}
+
+	// Adding preconfigured values
+	if len(m.Prepend) > 0 {
+		configs = append(m.Prepend, configs...)
+	}
+	if len(m.Append) > 0 {
+		configs = append(configs, m.Append...)
 	}
 
 	m.data = config.NewConfigurationsContainer(configs...)

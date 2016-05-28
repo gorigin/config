@@ -3,6 +3,7 @@ package multi
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorigin/config"
 	"github.com/gorigin/config/file"
 	"github.com/stretchr/testify/assert"
 	"testing"
@@ -16,7 +17,8 @@ func TestMultiConfig(t *testing.T) {
 		"main.json": `
 {
   "threshold": "!firstIni:variable!",
-  "secondary": "%someValue%"
+  "secondary": "%someValue%",
+  "replaced": "foo"
 }
 		`,
 		"app.yaml": `
@@ -54,6 +56,17 @@ CRz5s258W0k3bRGgoy5b0b9l3m4n587Gf2o4IzBAqpIvnPjLzfbe
 
 			return nil, fmt.Errorf("Invalid file %s", filename)
 		},
+		Prepend: []config.Configuration{
+			config.MapConfiguration(map[string]interface{}{
+				"prependedValue": 33.02,
+				"someValue":      100, // Will be replaced
+			}),
+		},
+		Append: []config.Configuration{
+			config.MapConfiguration(map[string]interface{}{
+				"replaced": "hello, world",
+			}),
+		},
 	})
 
 	assert.NotNil(c)
@@ -64,7 +77,7 @@ CRz5s258W0k3bRGgoy5b0b9l3m4n587Gf2o4IzBAqpIvnPjLzfbe
 	assert.NoError(err)
 
 	// Asserting
-	assert.Len(q, 8)
+	assert.Len(q, 10)
 	valueEq := func(key string, value interface{}) {
 		v, ok := c.Value(key)
 		if ok {
@@ -78,9 +91,11 @@ CRz5s258W0k3bRGgoy5b0b9l3m4n587Gf2o4IzBAqpIvnPjLzfbe
 		assert.Equal(value, v)
 	}
 
+	valueEq("someValue", "300")
 	valueEq("variable", "334")
 	valueEq("firstIni:variable", "334")
 	valueEq("threshold", "334")
 	valueEq("name", "admin")
 	valueEq("tertiary", "admin")
+	valueEq("replaced", "hello, world")
 }

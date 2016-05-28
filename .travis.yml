@@ -7,4 +7,7 @@ go:
   - tip
 
 script:
-  - make travis
+  - go get gopkg.in/yaml.v2
+  - go get github.com/stretchr/testify/assert
+  - go vet ./...
+  - go test ./...

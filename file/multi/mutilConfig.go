@@ -102,15 +102,7 @@ func (m *mfc) Reload() error {
 		}
 	}
 
-	// Adding preconfigured values
-	if len(m.Prepend) > 0 {
-		placeholders = append(m.Prepend, placeholders...)
-	}
-	if len(m.Append) > 0 {
-		placeholders = append(placeholders, m.Append...)
-	}
-
-	phc := config.NewConfigurationsContainer(placeholders...)
+	phc := config.NewConfigurationsContainer(m.injectConfigured(placeholders)...)
 
 	// Second pass - reading and replacing placeholders
 	configs := []config.Configuration{}
@@ -147,15 +139,7 @@ func (m *mfc) Reload() error {
 		}
 	}
 
-	// Adding preconfigured values
-	if len(m.Prepend) > 0 {
-		configs = append(m.Prepend, configs...)
-	}
-	if len(m.Append) > 0 {
-		configs = append(configs, m.Append...)
-	}
-
-	m.data = config.NewConfigurationsContainer(configs...)
+	m.data = config.NewConfigurationsContainer(m.injectConfigured(configs)...)
 	return m.Test()
 }
 
@@ -201,6 +185,18 @@ func (m *mfc) Qualifiers() ([]string, error) {
 	}
 
 	return m.data.Qualifiers()
+}
+
+// injectConfigured adds passed in Options configuration to multi-config
+func (m *mfc) injectConfigured(target []config.Configuration) []config.Configuration {
+	if len(m.Prepend) > 0 {
+		target = append(m.Prepend, target...)
+	}
+	if len(m.Append) > 0 {
+		target = append(target, m.Append...)
+	}
+
+	return target
 }
 
 func getExtAndRealExt(filename string) (ext string, real string) {

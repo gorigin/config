@@ -1,8 +1,8 @@
 # Makefile configuration
 .DEFAULT_GOAL := help
-.PHONY: help fmt vet test deps travis
+.PHONY: help fmt vet test deps cyclo travis
 
-ok: fmt vet test ## Prepares codebase (fmt+vet+test)
+ok: fmt vet cyclo test ## Prepares codebase (fmt+vet+test)
 
 fmt: ## Golang code formatting tool
 	@echo "Running formatting tool"
@@ -11,6 +11,10 @@ fmt: ## Golang code formatting tool
 vet: ## Check code against common errors
 	@echo "Running code inspection tools"
 	@go vet ./...
+
+cyclo: ## Check cyclomatic complexity
+	@echo "Running cyclomatic complexity test"
+	@${GOPATH}/bin/gocyclo -over 15 .
 
 test: ## Run tests
 	@echo "Running unit tests"

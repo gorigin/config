@@ -41,22 +41,7 @@ func NewArgsConfiguration(args []string, opts ArgsConfigurationOptions) Configur
 	}
 
 	for _, v := range args {
-		var key string
-		var value interface{}
-
-		if len(v) > 2 && v[0:2] == "--" {
-			chunks := strings.Split(v[2:], "=")
-			if len(chunks) == 1 {
-				key = chunks[0]
-				value = true
-			} else {
-				key = chunks[0]
-				value = chunks[1]
-			}
-		} else if len(v) > 1 && v[0:1] == "-" {
-			key = v[1:]
-			value = true
-		}
+		key, value := extractKeyValue(v)
 
 		if opts.VerboseAndQuiet {
 			if key == "vvv" {
@@ -80,4 +65,22 @@ func NewArgsConfiguration(args []string, opts ArgsConfigurationOptions) Configur
 	}
 
 	return MapConfiguration(cnf)
+}
+
+func extractKeyValue(v string) (key string, value interface{}) {
+	if len(v) > 2 && v[0:2] == "--" {
+		chunks := strings.Split(v[2:], "=")
+		if len(chunks) == 1 {
+			key = chunks[0]
+			value = true
+		} else {
+			key = chunks[0]
+			value = chunks[1]
+		}
+	} else if len(v) > 1 && v[0:1] == "-" {
+		key = v[1:]
+		value = true
+	}
+
+	return
 }

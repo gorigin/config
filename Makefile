@@ -1,0 +1,26 @@
+# Makefile configuration
+.DEFAULT_GOAL := help
+.PHONY: help fmt vet test deps travis
+
+ok: fmt vet test ## Prepares codebase (fmt+vet+test)
+
+fmt: ## Golang code formatting tool
+	@echo "Running formatting tool"
+	@gofmt -s -w .
+
+vet: ## Check code against common errors
+	@echo "Running code inspection tools"
+	@go vet ./...
+
+test: ## Run tests
+	@echo "Running unit tests"
+	@go test ./...
+
+deps: ## Download required dependencies
+	go get gopkg.in/yaml.v2
+	go get github.com/stretchr/testify/assert
+
+travis: deps vet test ## Runner for Travis CI (deps + vet + test)
+
+help:
+	@grep --extended-regexp '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-10s\033[0m %s\n", $$1, $$2}'

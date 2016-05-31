@@ -7,10 +7,4 @@ go:
   - tip
 
 script:
-  - go get gopkg.in/yaml.v2
-  - go get github.com/stretchr/testify/assert
-  - go get golang.org/x/crypto/openpgp
-  - go get golang.org/x/crypto/openpgp/armor
-  - go get golang.org/x/crypto/ssh/terminal
-  - go vet ./...
-  - go test ./...
+  - make travis

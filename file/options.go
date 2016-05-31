@@ -8,10 +8,10 @@ type Options struct {
 	Filename string
 
 	// Locator, used to find file
-	Locator FileLocator
+	Locator Locator
 
 	// Reader, used to read file contents
-	Reader FileReader
+	Reader Reader
 }
 
 // WithDefaults returns copy of options with default values set instead missing ones

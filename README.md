@@ -34,8 +34,8 @@ func main() {
 Locators used to locate file by it's name
 
 ```
-// FileLocator is function, able to found file in different locations
-type FileLocator func(string) (string, error)
+// Locator is function, able to found file in different locations
+type Locator func(string) (string, error)
 ```
 
 Implementations:
@@ -49,8 +49,8 @@ Implementations:
 Readers used to provide file contents (in bytes) by filename
 
 ```
-// FileReader can read resolved file contents
-type FileReader func(string) ([]byte, error)
+// Reader can read resolved file contents
+type Reader func(string) ([]byte, error)
 ```
 
 Implementations:

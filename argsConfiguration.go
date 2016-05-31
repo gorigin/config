@@ -8,8 +8,9 @@ import (
 // ArgsConfigurationOptions is configuration for command line arguments
 // configurator
 type ArgsConfigurationOptions struct {
-	// If provided, only options, prefixed with it will be analyzed
-	OnlyWithPrefix string
+	// Only keys with provided values will be analyzed
+	// Prefix itself will be removed from resulting key name
+	Prefix string
 
 	// If true, parses -v -vv -vvv -a flags and fills verbosity
 	// quiet                   : -1
@@ -27,7 +28,7 @@ type ArgsConfigurationOptions struct {
 // built on it
 func NewCommonOsArgsConfiguration() Configuration {
 	return NewArgsConfiguration(os.Args, ArgsConfigurationOptions{
-		OnlyWithPrefix:        "",
+		Prefix:                "",
 		VerboseAndQuiet:       true,
 		VerboseAndQuietPrefix: "",
 	})
@@ -55,12 +56,8 @@ func NewArgsConfiguration(args []string, opts ArgsConfigurationOptions) Configur
 			}
 		}
 
-		if opts.OnlyWithPrefix != "" {
-			if strings.HasPrefix(key, opts.OnlyWithPrefix) {
-				cnf[key] = value
-			}
-		} else {
-			cnf[key] = value
+		if opts.Prefix == "" || strings.HasPrefix(key, opts.Prefix) {
+			cnf[key[len(opts.Prefix):]] = value
 		}
 	}
 

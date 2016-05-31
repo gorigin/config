@@ -18,10 +18,10 @@ type Options struct {
 	Filenames []string
 
 	// Locator, used to find file
-	Locator file.FileLocator
+	Locator file.Locator
 
 	// Reader, used to read file contents
-	Reader file.FileReader
+	Reader file.Reader
 
 	// Prompter, invoked when password to decrypt file requested
 	Prompter func(string) ([]byte, error)

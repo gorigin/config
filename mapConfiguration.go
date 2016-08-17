@@ -47,6 +47,19 @@ func (mc MapConfiguration) Configure(qualifier string, target interface{}) error
 	return reflect.AnyMarshaller(v, target)
 }
 
+// ConfigureValidate performs configuration of target and validated
+// configuration if target implements validable interface
+func (mc MapConfiguration) ConfigureValidate(qualifier string, target interface{}) error {
+	err := mc.Configure(qualifier, target)
+	if err == nil {
+		if vt, ok := target.(Validable); ok {
+			err = vt.Validate()
+		}
+	}
+
+	return err
+}
+
 // Qualifiers returns list of qualifiers
 func (mc MapConfiguration) Qualifiers() ([]string, error) {
 	if err := mc.Test(); err != nil {

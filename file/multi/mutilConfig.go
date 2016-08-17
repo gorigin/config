@@ -176,6 +176,17 @@ func (m *mfc) Configure(qualifier string, target interface{}) error {
 	return m.data.Configure(qualifier, target)
 }
 
+func (m *mfc) ConfigureValidate(qualifier string, target interface{}) error {
+	err := m.Configure(qualifier, target)
+	if err == nil {
+		if vt, ok := target.(config.Validable); ok {
+			err = vt.Validate()
+		}
+	}
+
+	return err
+}
+
 func (m *mfc) Qualifiers() ([]string, error) {
 	if m.data == nil {
 		err := m.Reload()

@@ -60,6 +60,19 @@ func (cc ConfigurationsContainer) Configure(qualifier string, target interface{}
 	return fmt.Errorf("No config with qualifier %s found", qualifier)
 }
 
+// ConfigureValidate performs configuration of target and validated
+// configuration if target implements validable interface
+func (cc ConfigurationsContainer) ConfigureValidate(qualifier string, target interface{}) error {
+	err := cc.Configure(qualifier, target)
+	if err == nil {
+		if vt, ok := target.(Validable); ok {
+			err = vt.Validate()
+		}
+	}
+
+	return err
+}
+
 // Qualifiers returns list of qualifiers
 func (cc ConfigurationsContainer) Qualifiers() ([]string, error) {
 	unique := map[string]bool{}

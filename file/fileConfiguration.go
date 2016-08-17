@@ -105,6 +105,19 @@ func (fc *fileConfiguration) Configure(qualifier string, target interface{}) err
 	return fc.ReflectionMapper(val, target)
 }
 
+// ConfigureValidate performs configuration of target and validated
+// configuration if target implements validable interface
+func (fc fileConfiguration) ConfigureValidate(qualifier string, target interface{}) error {
+	err := fc.Configure(qualifier, target)
+	if err == nil {
+		if vt, ok := target.(config.Validable); ok {
+			err = vt.Validate()
+		}
+	}
+
+	return err
+}
+
 // Qualifiers returns list of qualifiers
 func (fc *fileConfiguration) Qualifiers() ([]string, error) {
 	if err := fc.Test(); err != nil {
